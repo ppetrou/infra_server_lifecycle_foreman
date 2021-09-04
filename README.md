@@ -3,6 +3,8 @@ infra_server_lifecycle_foreman
 
 A simple role to install foreman with support of moving the /var/lib/pulp directory to a Logical Volume
 
+THIS ROLE IS NOT IDEMPODENT IN THIS RELEASE. IF IT FAILS YOU WILL PROPABLY NEED TO CLEAN YOUR HOST AND RE-RUN.
+
 Requirements
 ------------
 

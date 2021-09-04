@@ -6,7 +6,7 @@ foreman_initial_location: London
 foreman_initial_admin_username: admin
 foreman_initial_admin_password: welcome1
 
-move_pulp_dir_in_separate_partition: yes
+move_pulp_dir_in_an_lvm: yes
 pulp_lvm: /dev/vg_pulp/lv_pulp
 
 
