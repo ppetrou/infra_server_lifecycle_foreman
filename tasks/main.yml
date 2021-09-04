@@ -125,6 +125,5 @@
 # Check Foreman Health
 - name: Check Foreman Health
   ansible.builtin.command: foreman-maintain health check --assumeyes
-  register: r_health_check
-  when: r_health_check.stdout is search("FAIL")
+
        
