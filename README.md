@@ -25,7 +25,7 @@ Role Variables
 |---|---|---|---	
 |foreman_initial_org|Default|string|Foreman Initial Organization
 |foreman_initial_location|Default|string|Foreman Initial Location
-|foreman_initial_admin_username|Vars|string|Foreman Admin Usernamae
+|foreman_initial_admin_username|Default|string|Foreman Admin Usernamae
 |foreman_initial_admin_password|Default|string|Foreman Admin Password
 |move_pulp_dir_in_an_lvm|Default|string|Whether /var/lib/pulp needs to be moved to a logical volume
 |pulp_lvm|Default|string|The Logical Volume to move the pulp directory
