@@ -120,7 +120,7 @@
     - name: Start foreman.
       ansible.builtin.command: foreman-maintain service start
 
-  when: move_pulp_dir_in_separate_partition  
+  when: move_pulp_dir_in_an_lvm  
 
 # Check Foreman Health
 - name: Check Foreman Health

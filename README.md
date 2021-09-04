@@ -27,7 +27,7 @@ Role Variables
 |foreman_initial_location|Default|string|Foreman Initial Location
 |foreman_initial_admin_username|Vars|string|Foreman Admin Usernamae
 |foreman_initial_admin_password|Default|string|Foreman Admin Password
-|move_pulp_dir_in_separate_partition|Default|string|Whether /var/lib/pulp needs to be moved to another disk
+|move_pulp_dir_in_an_lvm|Default|string|Whether /var/lib/pulp needs to be moved to a logical volume
 |pulp_lvm|Default|string|The Logical Volume to move the pulp directory
 
 
