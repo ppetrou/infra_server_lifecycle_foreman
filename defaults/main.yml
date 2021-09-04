@@ -1,0 +1,13 @@
+---
+# defaults file for infra_server_lifecycle_foreman
+
+foreman_initial_org: Laborg
+foreman_initial_location: London
+foreman_initial_admin_username: admin
+foreman_initial_admin_password: welcome1
+
+move_pulp_dir_in_separate_partition: yes
+pulp_lvm: /dev/vg_pulp/lv_pulp
+
+
+

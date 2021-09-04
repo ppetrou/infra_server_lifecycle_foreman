@@ -1,0 +1,8 @@
+---
+# vars file for infra_server_lifecycle_foreman
+
+foreman_rpm_url: https://yum.theforeman.org/releases/2.5/el8/x86_64/foreman-release.rpm
+katello_rpm_url: https://yum.theforeman.org/katello/4.1/katello/el8/x86_64/katello-repos-latest.rpm
+puppet_rpm_url: https://yum.puppet.com/puppet6-release-el-8.noarch.rpm
+
+foreman_install_cmd: foreman-installer --scenario katello --foreman-initial-organization {{ foreman_initial_org }} --foreman-initial-location {{ foreman_initial_location }} --foreman-initial-admin-username {{ foreman_initial_admin_username }} --foreman-initial-admin-password {{ foreman_initial_admin_password }}

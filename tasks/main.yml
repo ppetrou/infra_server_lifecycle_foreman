@@ -1,0 +1,130 @@
+---
+# tasks file for infra_server_lifecycle_foreman
+
+# Clear any metadata
+- name: Clear any metadata
+  command: dnf clean all
+
+# Install the foreman-release.rpm package
+- name: Install the foreman-release.rpm package
+  dnf:
+    name: "{{ foreman_rpm_url }}"
+    state: present
+
+# Install the katello-repos-latest.rpm package
+- name: Install the katello-repos-latest.rpm package
+  dnf:
+    name: "{{ katello_rpm_url }}"
+    state: present
+
+# Install the centos-release-ansible-29 package to enable repositories for dependencies of the Ansible collection support
+- name: Install the centos-release-ansible-29 package to enable repositories for dependencies of the Ansible collection support
+  dnf:
+    name: centos-release-ansible-29
+    state: present
+
+# Install the puppet6-release-el-8.noarch.rpm package
+- name: Install the puppet6-release-el-8.noarch.rpm package
+  dnf:
+    name: "{{ puppet_rpm_url }}"
+    state: present
+
+# Enable Ruby 2.7 module
+- name: Enable Ruby 2.7 module
+  command: "{{ item }}"
+  loop:
+    - dnf module reset -y ruby
+    - dnf module enable -y ruby:2.7
+
+# Enable powertools repository
+- name: Enable powertools repository
+  command: dnf config-manager --set-enabled powertools
+
+# Enable the PostgreSQL 12 module
+- name: Enable the PostgreSQL 12 module
+  command: dnf module enable -y postgresql:12
+
+# If the PostgreSQL 10 module has already been enabled, a module reset will need to be performed
+- name: If the PostgreSQL 10 module has already been enabled, a module reset will need to be performed
+  command: "{{ item }}"
+  loop:
+    - dnf module reset -y postgresql
+    - dnf module enable -y postgresql:12
+
+# Update all packages
+- name: Update all packages
+  dnf:
+    name: "*"
+    state: latest
+
+# Install foreman-installer-katello
+- name: Install foreman-installer-katello
+  dnf:
+    name: foreman-installer-katello
+    state: present
+
+# Install Foreman
+- name: Install Foreman
+  command: "{{ foreman_install_cmd }}"
+
+# Open firewalld
+- name: Open firewalld
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+  loop:
+    - 80/tcp
+    - 443/tcp
+    - 5647/tcp
+    - 8000/tcp
+    - 8140/tcp
+    - 9090/tcp
+
+# Move pulp directory to another disk
+- name: Move pulp directory to another disk
+  block:
+    - name: Stop foreman.
+      ansible.builtin.command: foreman-maintain service stop
+    
+    - name: Backup pulp directory
+      ansible.builtin.command: mv /var/lib/pulp /var/lib/pulp_bak
+
+    - name: Create pulp dir
+      ansible.builtin.command: mkdir /var/lib/pulp
+    
+    - name: Add fstab entry
+      ansible.builtin.command: echo "{{ pulp_lvm }} /var/lib/pulp	xfs	defaults	0 0" >> /etc/fstab
+    
+    - name: Remount 
+      ansible.posix.mount:
+        src: "{{ pulp_lvm }}"
+        path: /var/lib/pulp
+        fstype: xfs
+        state: mounted
+    
+    - name: Move pulp data to new directory
+      ansible.builtin.shell: mv /var/lib/pulp_bak/* /var/lib/pulp/
+    
+    - name: Fix selinux labels, ownership and permissions
+      ansible.builtin.command: "{{ item }}"
+      loop:
+        - chcon --reference /var/lib/pulp_bak /var/lib/pulp
+        - chown --reference /var/lib/pulp_bak /var/lib/pulp
+        - chmod --reference /var/lib/pulp_bak /var/lib/pulp
+    
+    - name: Delete pulp_back dir
+      ansible.builtin.command: rm -rf /var/lib/pulp_bak
+
+    - name: Start foreman.
+      ansible.builtin.command: foreman-maintain service start
+
+  when: move_pulp_dir_in_separate_partition  
+
+# Check Foreman Health
+- name: Check Foreman Health
+  ansible.builtin.command: foreman-maintain health check --assumeyes
+  register: r_health_check
+  when: r_health_check.stdout is search("FAIL")
+       
