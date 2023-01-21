@@ -5,6 +5,11 @@
 - name: Clear any metadata
   command: dnf clean all
 
+- name: Get the foreman rpm key
+  rpm_key:
+    state: present
+    key: https://yum.theforeman.org/releases/3.1/RPM-GPG-KEY-foreman
+
 # Install the foreman-release.rpm package
 - name: Install the foreman-release.rpm package
   dnf:
@@ -22,6 +27,11 @@
   dnf:
     name: centos-release-ansible-29
     state: present
+
+- name: Get the puppet rpm key
+  rpm_key:
+    state: present
+    key: https://yum.puppet.com/RPM-GPG-KEY-puppet-20250406
 
 # Install the puppet6-release-el-8.noarch.rpm package
 - name: Install the puppet6-release-el-8.noarch.rpm package
